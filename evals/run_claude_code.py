@@ -1,14 +1,14 @@
 """Run the evaluation cases through Claude Code non-interactively (optional helper).
 
 Creates a blinded input bundle with prepare.py, builds two isolated project folders
-(one with BIBANG under .claude/skills/bibang, one without any skill), runs each
+(one with BIBUNG under .claude/skills/bibung, one without any skill), runs each
 condition once with `claude -p`, and checks the output shape with validate.py.
 It does not judge scientific meaning or writing quality; review the outputs by hand
 as described in evals/README.md.
 
 Example:
     python evals/run_claude_code.py evals/runs/trial-01
-    python evals/run_claude_code.py evals/runs/trial-02 --condition bibang --model claude-sonnet-5
+    python evals/run_claude_code.py evals/runs/trial-02 --condition bibung --model claude-sonnet-5
 """
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ def build_projects(out: Path) -> dict[str, Path]:
     baseline = out / 'project-baseline' / '.claude'
     baseline.mkdir(parents=True)
     projects['baseline'] = baseline.parent
-    skill = out / 'project-bibang' / '.claude' / 'skills' / 'bibang'
+    skill = out / 'project-bibung' / '.claude' / 'skills' / 'bibung'
     skill.mkdir(parents=True)
     for name in SKILL_FILES:
         src = ROOT / name
@@ -65,7 +65,7 @@ def build_projects(out: Path) -> dict[str, Path]:
             shutil.copytree(src, skill / name)
         else:
             shutil.copy2(src, skill / name)
-    projects['bibang'] = skill.parents[2]
+    projects['bibung'] = skill.parents[2]
     return projects
 
 
@@ -73,8 +73,8 @@ def run_condition(claude: str, condition: str, project: Path, out: Path,
                   model: str | None, max_turns: int, timeout: int) -> dict:
     prompt_file = out / f'{condition}-prompt.txt'
     instruction = prompt_file.read_text(encoding='utf-8').strip()
-    if condition == 'bibang':
-        instruction = '/bibang ' + instruction
+    if condition == 'bibung':
+        instruction = '/bibung ' + instruction
     instruction += ('\n各入力はこの後に続くJSON配列にあります。'
                     '応答は指定の構造化出力のみとし、改稿文以外の説明文を加えないでください。')
     stdin = (out / 'inputs.json').read_text(encoding='utf-8')
@@ -120,7 +120,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('out', type=Path, help='A new directory, normally under evals/runs/')
     parser.add_argument('--claude', default='claude', help='Claude Code executable (default: claude on PATH)')
-    parser.add_argument('--condition', choices=('both', 'bibang', 'baseline'), default='both')
+    parser.add_argument('--condition', choices=('both', 'bibung', 'baseline'), default='both')
     parser.add_argument('--model', help='Model alias or ID passed to claude --model (default: session default)')
     parser.add_argument('--max-turns', type=int, default=20)
     parser.add_argument('--timeout', type=int, default=1800, help='Seconds per condition')
@@ -134,7 +134,7 @@ def main() -> int:
     prepare(out)
     projects = build_projects(out)
     cases = json.loads((ROOT / 'evals/cases.json').read_text(encoding='utf-8'))
-    conditions = ('bibang', 'baseline') if args.condition == 'both' else (args.condition,)
+    conditions = ('bibung', 'baseline') if args.condition == 'both' else (args.condition,)
     metadata = {
         'claude_executable': claude,
         'model_requested': args.model,

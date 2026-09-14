@@ -19,8 +19,8 @@ def prepare(out: Path) -> None:
                    'reasons（主要な修正理由の配列）、queries（要確認事項の配列）を持つオブジェクトのJSON配列としてください。'
                    '評価基準や正解例は読まず、外部検索は行わないでください。\n')
     (out / 'baseline-prompt.txt').write_text(instruction, encoding='utf-8')
-    (out / 'bibang-prompt.txt').write_text(
-        'BIBANGのSKILL.mdと、そこから参照されるreferences/の資料だけを読み、そのスキルを適用してください。'
+    (out / 'bibung-prompt.txt').write_text(
+        'BIBUNGのSKILL.mdと、そこから参照されるreferences/の資料だけを読み、そのスキルを適用してください。'
         'README.md、examples/、evals/は読まないでください。\n'+instruction,
         encoding='utf-8')
     print(f'Prepared {len(inputs)} cases in {out}. No model was called.')

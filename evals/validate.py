@@ -2,7 +2,7 @@
 
 Two modes:
   python evals/validate.py                  # repository: skill files + docs + evals
-  python evals/validate.py --installed --root ~/.claude/skills/bibang
+  python evals/validate.py --installed --root ~/.claude/skills/bibung
                                             # a deployed copy or zip root: skill files only
 """
 from __future__ import annotations
@@ -58,8 +58,8 @@ def check_frontmatter(data: dict, body: str) -> list[str]:
     if extra:
         errors.append(f'Non-portable frontmatter keys (rejected by claude.ai / Skills API upload): {extra}')
     name = data.get('name')
-    if name != 'bibang' or not NAME_RE.fullmatch(name) or len(name) > 64:
-        errors.append('Skill name must be "bibang" (lowercase letters, digits, single hyphens, <=64 chars)')
+    if name != 'bibung' or not NAME_RE.fullmatch(name) or len(name) > 64:
+        errors.append('Skill name must be "bibung" (lowercase letters, digits, single hyphens, <=64 chars)')
     desc = data.get('description')
     if not isinstance(desc, str) or not desc.strip() or len(desc) > 1024 or re.search(r'<[^>]+>', desc):
         errors.append('Description must be a nonempty string of at most 1024 characters without XML tags')
@@ -74,7 +74,7 @@ def check_frontmatter(data: dict, body: str) -> list[str]:
             errors.append('Skill metadata.version must be a quoted semantic version')
     if body.count('\n') > 500:
         errors.append('SKILL.md body must stay under 500 lines')
-    if re.search(r'\$ARGUMENTS|\$bibang|/bibang', body):
+    if re.search(r'\$ARGUMENTS|\$bibung|/bibung', body):
         errors.append('SKILL.md body must not contain platform-specific invocation syntax')
     return errors
 
@@ -87,8 +87,8 @@ def check_openai_yaml(path: Path) -> list[str]:
         for key in ('display_name', 'short_description', 'default_prompt'):
             if not isinstance(interface.get(key), str) or not interface[key].strip():
                 errors.append(f'UI interface.{key} must be a nonempty string')
-        if '$bibang' not in interface.get('default_prompt', ''):
-            errors.append('UI default_prompt must mention $bibang')
+        if '$bibung' not in interface.get('default_prompt', ''):
+            errors.append('UI default_prompt must mention $bibung')
         if ui.get('policy', {}).get('allow_implicit_invocation') is not True:
             errors.append('Implicit invocation must remain enabled')
     except (OSError, ValueError, yaml.YAMLError, KeyError, TypeError) as exc:
@@ -171,8 +171,8 @@ def validate(root: Path, installed: bool = False) -> list[str]:
     for name in required:
         if not (root / name).is_file():
             errors.append(f'Missing required file: {name}')
-    if installed and root.resolve().name != 'bibang':
-        errors.append(f'Installed skill folder must be named bibang, not {root.resolve().name}')
+    if installed and root.resolve().name != 'bibung':
+        errors.append(f'Installed skill folder must be named bibung, not {root.resolve().name}')
     try:
         data, body = frontmatter((root / 'SKILL.md').read_text(encoding='utf-8'))
         errors += check_frontmatter(data, body)

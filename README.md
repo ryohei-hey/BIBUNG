@@ -1,4 +1,4 @@
-# 美文技 BIBANG
+# 美文技 BIBUNG（ビブンギ）
 
 **「美しき我が日本語を汚す悪文は、何文たりとも許さない。」**
 
@@ -28,50 +28,50 @@
 
 ## 導入
 
-このリポジトリをダウンロードまたはcloneし、**フォルダ名を `bibang` にして、フォルダ全体を配置**してください。配置に必要なのは `SKILL.md`、`LICENSE`、`references/`、`agents/` の四つで、`README.md`・`examples/`・`evals/` は不要です。`SKILL.md` だけでは補助資料が不足します。
+このリポジトリをダウンロードまたはcloneし、**フォルダ名を `bibung` にして、フォルダ全体を配置**してください。配置に必要なのは `SKILL.md`、`LICENSE`、`references/`、`agents/` の四つで、`README.md`・`examples/`・`evals/` は不要です。`SKILL.md` だけでは補助資料が不足します。
 
 | 利用環境 | 自分の全プロジェクトで使う配置先 | 一つのプロジェクトで使う配置先 |
 |---|---|---|
-| Codex | `~/.agents/skills/bibang/` | `.agents/skills/bibang/` |
-| Claude Code | `~/.claude/skills/bibang/` | `.claude/skills/bibang/` |
-| claude.ai／Claude Desktop | `bibang/` をルートにしたzipを、設定のSkillsから追加（利用者ごと） | 同左 |
-| Claude API／Agent SDK | API：同じzipを `POST /v1/skills` に送る。SDK：`.claude/skills/bibang/` を置き、`settingSources` に `project` か `user` を含める | 同左 |
+| Codex | `~/.agents/skills/bibung/` | `.agents/skills/bibung/` |
+| Claude Code | `~/.claude/skills/bibung/` | `.claude/skills/bibung/` |
+| claude.ai／Claude Desktop | `bibung/` をルートにしたzipを、設定のSkillsから追加（利用者ごと） | 同左 |
+| Claude API／Agent SDK | API：同じzipを `POST /v1/skills` に送る。SDK：`.claude/skills/bibung/` を置き、`settingSources` に `project` か `user` を含める | 同左 |
 
-`~` はユーザーのホームフォルダです。配置後、各フォルダの直下に `SKILL.md` と `references/` があることを確認し、新しいセッションで呼び出してください。既存の `bibang` フォルダがある場合は、変更を確認してから更新します。各環境の導入は共有されず、claude.aiに追加したものはCodexやClaude Codeへ自動では入りません。
+`~` はユーザーのホームフォルダです。配置後、各フォルダの直下に `SKILL.md` と `references/` があることを確認し、新しいセッションで呼び出してください。既存の `bibung` フォルダがある場合は、変更を確認してから更新します。各環境の導入は共有されず、claude.aiに追加したものはCodexやClaude Codeへ自動では入りません。
 
-CodexとClaude Codeは互いのフォルダを読みません（Codexは `.agents/skills`、Claude CodeとAgent SDKは `.claude/skills` だけを探します）。両方で使う場合は、実体を一つにしてもう片方をリンクにするか、両方に同じ内容を置いて更新時に両方を入れ替えてください。リンク経由の読み込みは公式資料に明記がないため、初回に `$bibang` と `/bibang` の両方で呼び出せることを確認してください。
+CodexとClaude Codeは互いのフォルダを読みません（Codexは `.agents/skills`、Claude CodeとAgent SDKは `.claude/skills` だけを探します）。両方で使う場合は、実体を一つにしてもう片方をリンクにするか、両方に同じ内容を置いて更新時に両方を入れ替えてください。リンク経由の読み込みは公式資料に明記がないため、初回に `$bibung` と `/bibung` の両方で呼び出せることを確認してください。
 
 配置先は[Agent Skills仕様](https://agentskills.io/specification)、[OpenAI公式資料](https://learn.chatgpt.com/docs/build-skills)、[Claude Code公式資料](https://code.claude.com/docs/en/skills)、[Claude Platform公式資料](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)に基づきます。確認日：2026-09-13。
 
 ### ダウンロード後の配置例
 
-以下は、ダウンロードしたBIBANGフォルダ内で実行する初回導入用コマンドです。配置先に既存フォルダがある場合は停止します。Claude Codeでは配置先を `.claude/skills/bibang` に読み替えてください。
+以下は、ダウンロードしたリポジトリのフォルダ内で実行する初回導入用コマンドです。配置先に既存フォルダがある場合は停止します。Claude Codeでは配置先を `.claude/skills/bibung` に読み替えてください。
 
 **PowerShell：Codex（Claude Codeは1行目の `.agents` を `.claude` に）**
 
 ```powershell
-$bibangDest = Join-Path $HOME '.agents/skills/bibang'
-$bibangSource = (Get-Location).Path
-if (Test-Path -LiteralPath $bibangDest) { throw '既存のBIBANGがあります。更新内容を確認してください。' }
-if (-not (Test-Path -LiteralPath (Join-Path $bibangSource 'SKILL.md'))) { throw 'BIBANGフォルダ内で実行してください。' }
-New-Item -ItemType Directory -Path $bibangDest -Force | Out-Null
+$bibungDest = Join-Path $HOME '.agents/skills/bibung'
+$bibungSource = (Get-Location).Path
+if (Test-Path -LiteralPath $bibungDest) { throw '既存のBIBUNGがあります。更新内容を確認してください。' }
+if (-not (Test-Path -LiteralPath (Join-Path $bibungSource 'SKILL.md'))) { throw 'SKILL.mdのあるフォルダ内で実行してください。' }
+New-Item -ItemType Directory -Path $bibungDest -Force | Out-Null
 foreach ($entry in @('SKILL.md', 'LICENSE', 'references', 'agents')) {
-    Copy-Item -LiteralPath (Join-Path $bibangSource $entry) -Destination $bibangDest -Recurse
+    Copy-Item -LiteralPath (Join-Path $bibungSource $entry) -Destination $bibungDest -Recurse
 }
 ```
 
 **macOS／Linux：Codex（Claude Codeは1行目の `.agents` を `.claude` に）**
 
 ```sh
-bibang_dest="$HOME/.agents/skills/bibang"
-if [ -e "$bibang_dest" ]; then
-  echo '既存のBIBANGがあります。更新内容を確認してください。'
+bibung_dest="$HOME/.agents/skills/bibung"
+if [ -e "$bibung_dest" ]; then
+  echo '既存のBIBUNGがあります。更新内容を確認してください。'
 elif [ ! -f SKILL.md ]; then
-  echo 'BIBANGフォルダ内で実行してください。'
+  echo 'SKILL.mdのあるフォルダ内で実行してください。'
 else
-  mkdir -p "$bibang_dest"
-  cp SKILL.md LICENSE "$bibang_dest/"
-  cp -R references agents "$bibang_dest/"
+  mkdir -p "$bibung_dest"
+  cp SKILL.md LICENSE "$bibung_dest/"
+  cp -R references agents "$bibung_dest/"
 fi
 ```
 
@@ -79,26 +79,26 @@ fi
 
 ### claude.ai・Claude API用のzip
 
-GitHubのDownload ZIPは `BIBANG-main/` がルートになるため、`bibang/` をルートにしたzipを作ります。
+GitHubのDownload ZIPは `BIBUNG-main/` がルートになるため、`bibung/` をルートにしたzipを作ります。
 
 ```sh
-mkdir -p dist/bibang && cp -R SKILL.md LICENSE references agents dist/bibang/ && (cd dist && zip -r bibang.zip bibang)
+mkdir -p dist/bibung && cp -R SKILL.md LICENSE references agents dist/bibung/ && (cd dist && zip -r bibung.zip bibung)
 ```
 
-PowerShellでは `Compress-Archive -Path dist/bibang -DestinationPath dist/bibang.zip` を使います。claude.aiでは設定のSkillsからこのzipを追加します。Claude APIでは同じzipを `POST /v1/skills` に送ります。frontmatterはAgent Skills仕様の項目だけを使っているため、アップロード時の項目エラーは起きません。
+PowerShellでは `Compress-Archive -Path dist/bibung -DestinationPath dist/bibung.zip` を使います。claude.aiでは設定のSkillsからこのzipを追加します。Claude APIでは同じzipを `POST /v1/skills` に送ります。frontmatterはAgent Skills仕様の項目だけを使っているため、アップロード時の項目エラーは起きません。
 
 ## 使い方
 
 Codexでは次のように呼び出します。
 
 ```text
-$bibang この研究費申請書を、論旨と段落構成から見直してください。
+$bibung この研究費申請書を、論旨と段落構成から見直してください。
 科学的な意味を保ち、改稿文と主要な修正理由を示してください。
 
 （ここに本文）
 ```
 
-Claude Codeでは `/bibang` に続けて同じ依頼を書きます。続けて書いた文章はスキル本文の末尾に `ARGUMENTS:` として渡されます。claude.aiとAgent SDKでは、依頼文に「BIBANGで」と書くか、日本語の科学文章の推敲を頼めば説明文に基づいて選ばれます。どの環境でも、特定の原稿を確実にBIBANGで処理したい場合は名前を指定してください。
+Claude Codeでは `/bibung` に続けて同じ依頼を書きます。続けて書いた文章はスキル本文の末尾に `ARGUMENTS:` として渡されます。claude.aiとAgent SDKでは、依頼文に「BIBUNGで」と書くか、日本語の科学文章の推敲を頼めば説明文に基づいて選ばれます。どの環境でも、特定の原稿を確実にBIBUNGで処理したい場合は名前を指定してください。
 
 - 最小限の変更にしたいとき：「語句と文だけを直し、段落構成は維持してください」
 - 本文だけ欲しいとき：「改稿文だけを返してください」
@@ -110,11 +110,11 @@ Claude Codeでは `/bibang` に続けて同じ依頼を書きます。続けて�
 
 ## 入力形式と保持するもの
 
-貼り付け文章、Markdown、Quarto本文を対象にします。貼り付けた本文は応答で返し、ファイルは作りません。ファイルを指定した場合は、同じフォルダに `原名.bibang.拡張子`（例：`intro.qmd` → `intro.bibang.qmd`）を作り、同名の出力があれば `原名.bibang.2.拡張子` から番号を付けます。長い原稿では修正理由と要確認を `原名.bibang.notes.md` にも書きます。原本の変更を明示的に依頼した場合は、その範囲で編集します。
+貼り付け文章、Markdown、Quarto本文を対象にします。貼り付けた本文は応答で返し、ファイルは作りません。ファイルを指定した場合は、同じフォルダに `原名.bibung.拡張子`（例：`intro.qmd` → `intro.bibung.qmd`）を作り、同名の出力があれば `原名.bibung.2.拡張子` から番号を付けます。長い原稿では修正理由と要確認を `原名.bibung.notes.md` にも書きます。原本の変更を明示的に依頼した場合は、その範囲で編集します。
 
 数値、単位、対象集団、比較対象、評価時点、主体、否定、条件、不確実性、引用・図表参照の対応を保ちます。YAML、数式、コード、引用キー、リンク先、図表ID、相互参照、直接引用の内容は編集しません。英文抄録や文献情報など英語の部分も編集しません。
 
-Wordの変更履歴付き編集、PDFの直接編集、英文校正、文献調査や研究結果の新規作成は対象外です。BIBANGの推敲は原文の事実を独立に検証するものではありません。
+Wordの変更履歴付き編集、PDFの直接編集、英文校正、文献調査や研究結果の新規作成は対象外です。BIBUNGの推敲は原文の事実を独立に検証するものではありません。
 
 ## 検証状況
 
@@ -138,6 +138,6 @@ CIはfrontmatterの互換性（共通仕様の項目だけを使っているか�
 
 [humanizer_academic](https://github.com/matsuikentaro1/humanizer_academic)をはじめ、Humanizer系スキルと科学文章の編集原則を参考に、日本語用の指示と例文を独自作成しました。[参照コミットと採用箇所](references/sources.md)を記録しています。
 
-BIBANG本体は[MIT License](LICENSE)です。著者：Ryohei Kobayashi-Yamamoto。改善提案は[貢献方法](CONTRIBUTING.md)、版ごとの変更は[変更履歴](CHANGELOG.md)をご覧ください。
+BIBUNG本体は[MIT License](LICENSE)です。著者：Ryohei Kobayashi-Yamamoto。改善提案は[貢献方法](CONTRIBUTING.md)、版ごとの変更は[変更履歴](CHANGELOG.md)をご覧ください。
 
-名称は「美文技」、表記はBIBANG。VIVANTにあやかった命名ですが、作品の画像・ロゴは使用していません。
+名称は「美文技」、表記は **BIBUNG（ビブンギ）**。`BIBUN（美文）＋ G（技）` に由来します。VIVANTにあやかった命名ですが、作品の画像・ロゴは使用していません。

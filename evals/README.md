@@ -24,8 +24,8 @@
 
 1. `python evals/prepare.py evals/runs/trial-01` で新しい入力フォルダを作る。API呼び出しは発生しない。`inputs.json`、条件別のプロンプト、評価時点の `cases.snapshot.json` が作られる。
 2. 同じモデルと設定で別セッションを開き、両条件に `inputs.json` と各条件のプロンプトを渡す。各ケースを独立に扱う。厳密な比較では一例ずつ新しいセッションを使う。
-3. スキルなし条件にはBIBANGや他の編集スキルを読み込ませない。スキルあり条件にはSKILL.mdと `references/` だけを読ませ、README.md・examples/・evals/は読ませない。両者に評価基準・説明用例・相手の出力は見せない。
-4. 指定のJSON形式で結果を保存し、`python evals/validate.py --outputs evals/runs/trial-01/bibang.json --cases evals/runs/trial-01/cases.snapshot.json` で件数、保護対象、査読のみの例の不変を確認する。これは意味の自動判定ではない。良い文章の完全一致数も参考値として表示される。
+3. スキルなし条件にはBIBUNGや他の編集スキルを読み込ませない。スキルあり条件にはSKILL.mdと `references/` だけを読ませ、README.md・examples/・evals/は読ませない。両者に評価基準・説明用例・相手の出力は見せない。
+4. 指定のJSON形式で結果を保存し、`python evals/validate.py --outputs evals/runs/trial-01/bibung.json --cases evals/runs/trial-01/cases.snapshot.json` で件数、保護対象、査読のみの例の不変を確認する。これは意味の自動判定ではない。良い文章の完全一致数も参考値として表示される。
 5. 原文と改稿文を照合し、各観点とケース固有の判断を評価する。可能なら条件名を隠して第三者に評価してもらう。
 6. モデル名、設定、日時、スキル版またはハッシュ（`python evals/validate.py --sha256`）、実行条件、出力、評価者、失敗と限界を記録する。未実施をゼロ件や合格と記録しない。
 
@@ -33,7 +33,7 @@
 
 ### Claude Codeでの自動実行
 
-Claude Code CLIがあれば、手順1〜4を `python evals/run_claude_code.py evals/runs/trial-01` で一度に実行できる。スキルあり条件は一時フォルダの `.claude/skills/bibang` に本体・`references/`・LICENSEだけを配置し、スキルなし条件は空のプロジェクトで実行する。どちらも `--setting-sources project` でユーザー設定のスキルを読み込まず、構造化出力で結果を受け取る。`--claude` で実行ファイル、`--model` でモデル、`--condition` で片方の条件だけを指定できる。出力・生応答・メタデータは指定フォルダに保存される。意味の評価は手順5・6のとおり人手で行う。
+Claude Code CLIがあれば、手順1〜4を `python evals/run_claude_code.py evals/runs/trial-01` で一度に実行できる。スキルあり条件は一時フォルダの `.claude/skills/bibung` に本体・`references/`・LICENSEだけを配置し、スキルなし条件は空のプロジェクトで実行する。どちらも `--setting-sources project` でユーザー設定のスキルを読み込まず、構造化出力で結果を受け取る。`--claude` で実行ファイル、`--model` でモデル、`--condition` で片方の条件だけを指定できる。出力・生応答・メタデータは指定フォルダに保存される。意味の評価は手順5・6のとおり人手で行う。
 
 初回の24例は各条件で一括処理した開発用評価である。セッション内の影響、評価者が開発者と同じであること、条件が完全に盲検化されていないことを制約として記録する。意味上の問題が見つかった場合だけ指示を修正し、修正対象と関連する例を再検証する。開発に使った例での改善を、独立した外部検証として扱わない。
 

@@ -33,7 +33,7 @@ class FrontmatterTests(unittest.TestCase):
         bad = dict(data, **{'argument-hint': '[text]'})
         self.assertTrue(any('Non-portable' in e for e in check_frontmatter(bad, body)))
         self.assertTrue(any('platform-specific' in e for e in check_frontmatter(data, body + '\n$ARGUMENTS\n')))
-        self.assertTrue(check_frontmatter(dict(data, name='Bibang'), body))
+        self.assertTrue(check_frontmatter(dict(data, name='Bibung'), body))
         self.assertTrue(check_frontmatter(dict(data, description='<skill>x</skill>'), body))
 
 
@@ -93,7 +93,7 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(validate(ROOT), [])
 
     def test_broken_link_and_scaffold(self):
-        with tempfile.TemporaryDirectory(prefix='bibang-validate-') as tmp:
+        with tempfile.TemporaryDirectory(prefix='bibung-validate-') as tmp:
             target = Path(tmp).resolve() / 'package'
             shutil.copytree(ROOT, target, ignore=IGNORE)
             self.assertEqual(validate(target), [])
@@ -104,7 +104,7 @@ class PackageTests(unittest.TestCase):
             self.assertTrue(any('unfinished scaffold' in e for e in errors))
 
     def test_skill_links_stay_inside_installed_set(self):
-        with tempfile.TemporaryDirectory(prefix='bibang-validate-') as tmp:
+        with tempfile.TemporaryDirectory(prefix='bibung-validate-') as tmp:
             target = Path(tmp).resolve() / 'package'
             shutil.copytree(ROOT, target, ignore=IGNORE)
             with (target / 'SKILL.md').open('a', encoding='utf-8') as handle:
@@ -112,17 +112,17 @@ class PackageTests(unittest.TestCase):
             self.assertTrue(any('leaves the installed set' in e for e in validate(target)))
 
     def test_installed_copy_validates_without_repo_files(self):
-        with tempfile.TemporaryDirectory(prefix='bibang-installed-') as tmp:
-            dest = Path(tmp).resolve() / 'bibang'
+        with tempfile.TemporaryDirectory(prefix='bibung-installed-') as tmp:
+            dest = Path(tmp).resolve() / 'bibung'
             for name in SKILL_FILES:
                 (dest / name).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(ROOT / name, dest / name)
             shutil.copytree(ROOT / 'agents', dest / 'agents')
             self.assertEqual(validate(dest, installed=True), [])
             self.assertTrue(any('Missing required file' in e for e in validate(dest, installed=False)))
-            renamed = dest.with_name('bibang-main')
+            renamed = dest.with_name('bibung-main')
             dest.rename(renamed)
-            self.assertTrue(any('must be named bibang' in e for e in validate(renamed, installed=True)))
+            self.assertTrue(any('must be named bibung' in e for e in validate(renamed, installed=True)))
 
 
 if __name__ == '__main__':

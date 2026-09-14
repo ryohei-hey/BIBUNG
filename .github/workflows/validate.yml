@@ -33,8 +33,8 @@ jobs:
           HOME: ${{ runner.temp }}/home
         run: |
           mkdir -p "$HOME"
-          bibang_dest="$HOME/.claude/skills/bibang"
-          mkdir -p "$bibang_dest"
-          cp SKILL.md LICENSE "$bibang_dest/"
-          cp -R references agents "$bibang_dest/"
-          python evals/validate.py --installed --root "$bibang_dest"
+          bibung_dest="$HOME/.claude/skills/bibung"
+          mkdir -p "$bibung_dest"
+          cp SKILL.md LICENSE "$bibung_dest/"
+          cp -R references agents "$bibung_dest/"
+          python evals/validate.py --installed --root "$bibung_dest"

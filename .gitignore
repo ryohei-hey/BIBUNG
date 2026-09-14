@@ -9,8 +9,8 @@ __pycache__/
 Thumbs.db
 evals/runs/
 dist/
-*.bibang.md
-*.bibang.qmd
-*.bibang.*.md
-*.bibang.*.qmd
-*.bibang.notes.md
+*.bibung.md
+*.bibung.qmd
+*.bibung.*.md
+*.bibung.*.qmd
+*.bibung.notes.md
