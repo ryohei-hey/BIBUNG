@@ -18,8 +18,8 @@
 | Claude Code CLIでのファイル保存 | 未検証 | — |
 | Claude Code非対話実行での32例比較（v0.2.0） | 「v0.2.0の32例比較」を参照 | [v0.2.0-claude-code/](results/2026-09-13/v0.2.0-claude-code/) |
 | claude.ai カスタムスキル／Claude API Agent Skills | 未検証（frontmatterは仕様項目のみで、検証器が仕様外項目を検出する） | — |
-| macOS／Linuxでの導入 | 未検証（CIに手順の確認を追加済み、リモート実行は未実施） | — |
-| GitHub ActionsでのCI実行 | 未検証 | — |
+| macOS／Linuxでの導入 | 確認（2026-09-14、CIでmacOS・Ubuntuの配置手順と `--installed` 検証が成功） | GitHub Actions |
+| GitHub ActionsでのCI実行 | 確認（2026-09-14、Windows・macOS・Ubuntu × Python 3.10／3.13 の6環境で成功） | GitHub Actions |
 
 ## v0.1.0の24例評価
 
