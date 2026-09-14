@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-13",
+  "engine": "Independent Codex collaboration agent, not CLI",
+  "original_and_existing_output_unchanged": {
+    "input.qmd": true,
+    "input.bibang.qmd": true
+  },
+  "outputs": [
+    {
+      "file": "input.bibang.2.qmd",
+      "protected_spans_unchanged": true,
+      "prose_changed": true,
+      "text": "---\ntitle: \"架空の研究\"\nformat: html\nbibliography: references.bib\n---\n\n## 結果 {#sec-results}\n\n結果を @fig-flow に示す [@sample2025]。解析では $p < 0.05$ を用いた。\n\n![対象者の流れ](figures/flow.png){#fig-flow}\n\n```{r}\n#| label: count\nn <- 80\nn\n```"
+    }
+  ],
+  "cli_save": "Blocked by effective read-only policy; no successful CLI save claimed."
+}

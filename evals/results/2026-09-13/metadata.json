@@ -1,0 +1,28 @@
+{
+  "date": "2026-09-13",
+  "version": "0.1.0",
+  "model_family": "GPT-6 (parent session)",
+  "exact_api_model_id": null,
+  "temperature": null,
+  "seed": null,
+  "model_policy": "All independent evaluation agents inherited the parent model and reasoning effort; no model overrides were used.",
+  "execution": "Independent Codex collaboration sessions; 24 cases batched per condition; final run additionally included 2 followup cases.",
+  "reviewer": "BIBANG developer (Codex); non-blinded qualitative review",
+  "baseline_instruction": "Read only the input requests. Fulfill each as a capable editor preserving scientific meaning. Return id, revised, reasons, queries. Do not read skill, criteria, examples, memory or other outputs; no browsing.",
+  "skill_instruction": "Read SKILL.md and necessary linked editing references. Apply bibang to each independent request. Return id, revised, reasons, queries. Do not read criteria, examples, memory, sources.md or other outputs; no browsing.",
+  "iteration": "Initial F04 missed implementation-status ambiguity. Added one cross-sentence check to scientific-fidelity.md, then ran all 24 cases and 2 followups in a fresh agent.",
+  "limitations": [
+    "One batch per condition, not independently randomized cases",
+    "Developer-authored cases and non-blinded developer review",
+    "Exact API model and sampling settings unavailable",
+    "Not a Codex CLI or Claude Code model benchmark"
+  ],
+  "text_evaluation_skill_and_corpus_sha256": {
+    "SKILL.md": "2b97ac9d30c6f859522201f445f94166379ae46e3f02c5ea35cd87a70cf1a1ad",
+    "references/scientific-fidelity.md": "55e281ad5efe80dcae265f764b9ad5d80c3faed7760c485ca3b69cb41c383961",
+    "references/japanese-editing.md": "3f8220f43bfe5ca8db27fce48c5ec420455a667f6d4bb26a8f107261fbb9088f",
+    "references/genre-guidance.md": "a2a66c82a79a6cd37a2100c088499e47bfdf2e30433edfe00543204bb694b71b",
+    "evals/cases.json": "e7c30d2c5acb2a297602c50f4f93c4f1dfe00e66cfb731bd4a255e73b4df25d6"
+  },
+  "post_text_evaluation_change": "Added file-write-denial fallback after CLI permission failure. Text editing rules unchanged. File behavior tested separately."
+}

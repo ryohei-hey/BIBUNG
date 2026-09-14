@@ -1,0 +1,6 @@
+interface:
+  display_name: "美文技 BIBANG"
+  short_description: "科学的な意味を保ち、論旨と段落から日本語の論文・申請書・解説を磨く"
+  default_prompt: "$bibang この日本語の科学文章を論旨と段落構成から見直し、科学的な意味を保った改稿文と主要な修正理由を示してください。"
+policy:
+  allow_implicit_invocation: true

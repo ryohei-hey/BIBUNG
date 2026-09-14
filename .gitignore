@@ -1,0 +1,16 @@
+.local/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+evals/runs/
+dist/
+*.bibang.md
+*.bibang.qmd
+*.bibang.*.md
+*.bibang.*.qmd
+*.bibang.notes.md

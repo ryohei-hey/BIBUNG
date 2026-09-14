@@ -1,0 +1,40 @@
+name: Validate skill package
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.10', '3.13']
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -r evals/requirements.txt
+      - run: python evals/validate.py
+      - run: python -m unittest discover -s evals -p "test_*.py"
+      - name: README install snippet and installed-copy validation (macOS/Linux)
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          HOME: ${{ runner.temp }}/home
+        run: |
+          mkdir -p "$HOME"
+          bibang_dest="$HOME/.claude/skills/bibang"
+          mkdir -p "$bibang_dest"
+          cp SKILL.md LICENSE "$bibang_dest/"
+          cp -R references agents "$bibang_dest/"
+          python evals/validate.py --installed --root "$bibang_dest"

@@ -1,0 +1,17 @@
+{
+  "platform": "Windows",
+  "cli_version": "0.147.0",
+  "model_id": null,
+  "sandbox": "read-only",
+  "exit_code": 0,
+  "fixture": "G01-like pasted text",
+  "skill_snapshot": "Initial 0.1.0 before cross-sentence status clarification",
+  "read_paths": [
+    "SKILL.md",
+    "references/scientific-fidelity.md",
+    "references/japanese-editing.md",
+    "references/genre-guidance.md"
+  ],
+  "response": "### 改稿文\n\n成人患者80人を解析対象とした。年齢および性別で調整した解析では、睡眠時間は疲労得点と関連していた。ただし、未測定交絡の影響は否定できない。\n\n### 主要な修正理由\n\n- 「解析対象は〜であった」を「〜を解析対象とした」とし、簡潔で自然な表現にした。\n- 「睡眠時間と疲労得点に関連が認められた」は助詞の関係が曖昧なため、「睡眠時間は疲労得点と関連していた」として、関連する二変数を明確にした。\n- 「年齢と性別」は、論文で並列関係を明瞭に示すため「年齢および性別」とした。\n- 関連を因果関係に置き換えず、未測定交絡に関する留保も維持した。\n\n### 実際に読んだスキル資料\n\n- `.agents/skills/bibang/SKILL.md`\n- `.agents/skills/bibang/references/scientific-fidelity.md`\n- `.agents/skills/bibang/references/japanese-editing.md`\n- `.agents/skills/bibang/references/genre-guidance.md`",
+  "finding": "Discovery and file reads succeeded. Meaning preserved; unnecessary wording edits observed."
+}

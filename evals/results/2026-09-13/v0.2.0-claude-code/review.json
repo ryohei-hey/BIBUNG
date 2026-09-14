@@ -1,0 +1,48 @@
+{
+  "date": "2026-09-13",
+  "reviewer": "BIBANG developer (Claude Fable 5.1 session); non-blinded, criteria-based reading of each output against invariants",
+  "engine": "Claude Code CLI 2.1.270, claude -p, --setting-sources project, structured output; model claude-opus-5[1m] for both conditions (CLI default when user settings are not loaded)",
+  "bibang": {
+    "criteria_met_all": true,
+    "good_identical": "7/7",
+    "fragile_protected_spans": "F05, F06, N04 unchanged (validator)",
+    "review_only_unchanged": "N06 unchanged with 論旨→文 itemised proposals",
+    "queries_raised": {
+      "F02": 1,
+      "F04": 3,
+      "N01": 1,
+      "N03": 1,
+      "N06": 2,
+      "H01": 1,
+      "others": 0
+    },
+    "notes": [
+      "R01: 算出の主体を理学療法士に結び付けず別文に保った（修正理由の引用に「測定の実施を実施した」という誤記あり）。",
+      "R04/N02: 重なった留保を原文の語（示唆している／可能性がある）に減らし、断定にしていない。",
+      "R06: 承認後の取得開始を第1年度の文へ移し「開始する予定である」を「開始する」とした。予定の段階は文脈で読めるが、原文の「予定」は落ちている（軽微）。",
+      "N01: 見出し保持、本文391字（依頼400字以内）、字数を概数・数え方付きで報告。（1）と（2）の研究範囲の不一致を要確認にした。",
+      "N03: 前後の件数を因果表現にせず、差や減少率を計算せず、看護師配置の変更を残した。",
+      "N05: 見本を出力に含めず、見本の事実を移さず、見本の敬体に合わせた。",
+      "要確認は全て該当箇所の引用→食い違い→確認事項の形で、文献調査や追加解析の提案は含まない。"
+    ]
+  },
+  "baseline": {
+    "criteria_met_all": false,
+    "good_identical": "7/7（ただしG01・G06・H02に査読型の提案を付けた）",
+    "failures": [
+      "F02: 同等性の主張を本文で書き換えた（黙って訂正しない基準に不適合。方向は科学的に妥当）。",
+      "F03: 「全患者で改善したわけではない」を評価可能患者に限定した文に変え、否定の範囲を変更した。",
+      "H01: 文の順序を入れ替え、予定と結果の並びを変えた（内容は保持、要確認あり）。",
+      "N01: 原文にない意義の文「生活場面に応じた服薬支援を検討する基礎資料となる」を追加した。",
+      "N05: 見本を出力（revised）に含めた。",
+      "R12: 機械的な導入を「ここでは、評価時点について説明します」に置き換えて残した。",
+      "多くの例で文献追加・推定値の提示・方法の追記など、入力の外の根拠を求める提案をqueriesに出した（R01〜R07、G01、G06、F01、F05、F06、N01〜N04、H02）。"
+    ]
+  },
+  "limitations": [
+    "一条件一セッションの一括処理",
+    "開発者による非盲検の照合",
+    "同一モデルでの1回の実行であり、モデル間・実行間のばらつきは未評価",
+    "評価例は開発時に作成した短文〜中文の架空例"
+  ]
+}
