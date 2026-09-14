@@ -13,6 +13,7 @@
 - 互換性：frontmatterをAgent Skills仕様の項目に限定する理由と各環境の呼び出し方を参照元に記録。READMEにclaude.ai／Claude API向けのzip作成、CodexとClaude Codeのフォルダの違い、`ARGUMENTS:` の渡り方を追加。READMEの改稿例を評価例と重ならない架空例に差し替え。
 - 評価：`fragile` に因果の生成、引用キーの移動、見本からの事実の流入、査読のみ、実施状況の2例を、`rewrite` に科研費様式の長文と文体混在を追加（24例→32例）。検証器は群の下限、`protected`／`expect_unchanged` の印、仕様外frontmatterの検出、配置先の検証（`--installed`）、LF正規化ハッシュ（`--sha256`）に対応。`run_claude_code.py` でClaude Codeの両条件を非対話実行できるようにした。CIをmacOSとPython 3.10に広げ、配置手順の確認を加えた。`.gitattributes` でLFに統一。
 - 検証：Claude Code CLI 2.1.270（Windows）でスキルの発見・`/bibung` 呼び出し・補助資料の読み込みを確認。Codex CLI 0.147.0（gpt-5.5）で改訂版の読み込みを再確認。実測と限界は[評価結果](evals/RESULTS.md)。
+- READMEに段落単位の改稿例（架空例）を追加し、動作を名詞にすると役割が落ちるという原因と、目的語・対比・指示語・断定・等位接続の直し方を示した。
 - 公開：2026-09-14にGitHubで公開し、CIを6環境（Windows・macOS・Ubuntu × Python 3.10／3.13）で実行して成功を確認した。
 
 ## 0.1.0 — 2026-09-13
