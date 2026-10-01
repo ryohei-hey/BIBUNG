@@ -68,6 +68,22 @@ class OutputTests(unittest.TestCase):
         dropped = [dict(id='N04', revised=cases[0]['text'].replace(' [@sato2019]', ''), reasons=[], queries=[])]
         self.assertTrue(check_outputs(cases, dropped))
 
+    def test_numbers_and_statistic_labels_are_compared_for_every_case(self):
+        cases = [case('M01')]
+        text = cases[0]['text']
+        merged = text.replace('このように、死亡率については両群の間で差が出なかった。', '')
+        self.assertEqual(check_outputs(cases, [dict(id='M01', revised=merged, reasons=[], queries=[])]), [])
+        for old, new in [('0.72', '0.70'), ('P=0.41', 'P=0.04'), ('13.4%', '13.4'),
+                         ('調整オッズ比0.72', '調整オッズ比0.72（調整HR）')]:
+            bad = [dict(id='M01', revised=text.replace(old, new), reasons=[], queries=[])]
+            self.assertTrue(any('numbers or statistic labels' in e for e in check_outputs(cases, bad)), old)
+        added = [dict(id='M01', revised=text + '差は1.3ポイントであった。', reasons=[], queries=[])]
+        self.assertTrue(any('added' in e for e in check_outputs(cases, added)))
+
+    def test_number_check_ignores_style_sample_and_fullwidth(self):
+        cases = [dict(id='X', text='【見本】\n1回に2回測る。\n\n【編集対象】\n歩数を7日間記録する。')]
+        self.assertEqual(check_outputs(cases, [dict(id='X', revised='歩数を７日間記録する。', reasons=[], queries=[])]), [])
+
     def test_review_only_case_must_be_unchanged(self):
         cases = [case('N06')]
         same = [dict(id='N06', revised=cases[0]['text'], reasons=[], queries=['要確認：人数'])]

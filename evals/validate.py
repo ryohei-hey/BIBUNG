@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import unicodedata
 from urllib.parse import unquote, urlsplit
 
 import yaml
@@ -38,7 +39,7 @@ INSTALLED_TOP_LEVEL = {'references', 'agents', 'LICENSE'}
 PORTABLE_KEYS = {'name', 'description', 'license', 'compatibility', 'metadata', 'allowed-tools'}
 NAME_RE = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
 MIN_CASES = {'rewrite': 12, 'good': 6, 'fragile': 6}
-GENRES = {'paper', 'grant', 'explanation'}
+GENRES = {'paper', 'grant', 'explanation', 'other'}  # other: science blogs, work documents, essays
 HASHED_FILES = ('SKILL.md', 'references/*.md', 'evals/cases.json')
 
 
@@ -205,6 +206,19 @@ def protected_spans(text: str) -> Counter:
     return Counter(spans)
 
 
+STAT_LABELS = r'HR|OR|RR|aHR|aOR|aRR|CI|SD|SE|IQR|AUC|NNT|ICC|[Pp](?=\s*[=<>＝＜＞≦≧≤≥])|n(?=\s*[=＝])'
+
+
+def numeric_tokens(text: str) -> set[str]:
+    """Distinct numbers (with %) and statistic labels. Set, not multiset: merging a repeated value is allowed.
+
+    Only the part after 【編集対象】 is compared when present, since an author's style sample is not edited."""
+    text = unicodedata.normalize('NFKC', text.split('【編集対象】', 1)[-1])
+    numbers = re.findall(r'\d+(?:[.,]\d+)*%?', text)
+    labels = re.findall(rf'(?<![A-Za-z])(?:{STAT_LABELS})(?![A-Za-z])', text)
+    return set(numbers) | {f'label:{x}' for x in labels}
+
+
 def check_outputs(cases: list[dict], outputs: list[dict]) -> list[str]:
     errors = []
     if not isinstance(outputs, list) or any(not isinstance(o, dict) for o in outputs):
@@ -221,6 +235,10 @@ def check_outputs(cases: list[dict], outputs: list[dict]) -> list[str]:
         for key in ('reasons', 'queries'):
             if not isinstance(o.get(key), list) or any(not isinstance(v, str) for v in o[key]):
                 errors.append(f'{c["id"]}: {key} must be an array of strings')
+        before, after = numeric_tokens(c['text']), numeric_tokens(o['revised'])
+        if before != after:
+            lost, added = sorted(before - after), sorted(after - before)
+            errors.append(f'{c["id"]}: numbers or statistic labels changed (lost {lost}, added {added})')
         if c.get('protected') and protected_spans(c['text']) != protected_spans(o['revised']):
             errors.append(f'{c["id"]}: protected Markdown/Quarto spans changed')
         if c.get('expect_unchanged') and o['revised'].replace('\r\n', '\n') != c['text'].replace('\r\n', '\n'):
