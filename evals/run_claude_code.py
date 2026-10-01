@@ -2,13 +2,15 @@
 
 Creates a blinded input bundle with prepare.py, builds two isolated project folders
 (one with BIBUNG under .claude/skills/bibung, one without any skill), runs each
-condition once with `claude -p`, and checks the output shape with validate.py.
+condition with `claude -p` (in one session, or in batches with --batch-size), and
+checks the output shape with validate.py.
 It does not judge scientific meaning or writing quality; review the outputs by hand
 as described in evals/README.md.
 
 Example:
     python evals/run_claude_code.py evals/runs/trial-01
     python evals/run_claude_code.py evals/runs/trial-02 --condition bibung --model claude-sonnet-5
+    python evals/run_claude_code.py evals/runs/trial-03 --batch-size 6
 """
 from __future__ import annotations
 
@@ -69,16 +71,18 @@ def build_projects(out: Path) -> dict[str, Path]:
     return projects
 
 
-def run_condition(claude: str, condition: str, project: Path, out: Path,
-                  model: str | None, max_turns: int, timeout: int) -> dict:
+def run_batch(claude: str, condition: str, project: Path, out: Path, inputs: list[dict],
+              label: str, model: str | None, max_turns: int, timeout: int) -> tuple[list, dict]:
     prompt_file = out / f'{condition}-prompt.txt'
     instruction = prompt_file.read_text(encoding='utf-8').strip()
     if condition == 'bibung':
         instruction = '/bibung ' + instruction
     instruction += ('\n各入力はこの後に続くJSON配列にあります。'
                     '応答は指定の構造化出力のみとし、改稿文以外の説明文を加えないでください。')
-    stdin = (out / 'inputs.json').read_text(encoding='utf-8')
-    cmd = [claude, '-p', instruction, '--output-format', 'json',
+    # The prompt goes through stdin, not argv: on Windows the npm shim (claude.cmd) cuts
+    # arguments at the first newline and silently drops every flag after it.
+    stdin = instruction + '\n\n' + json.dumps(inputs, ensure_ascii=False, indent=2) + '\n'
+    cmd = [claude, '-p', '--output-format', 'json',
            '--json-schema', json.dumps(OUTPUT_SCHEMA, ensure_ascii=False),
            '--setting-sources', 'project', '--permission-mode', 'default',
            '--max-turns', str(max_turns), '--no-session-persistence']
@@ -87,12 +91,17 @@ def run_condition(claude: str, condition: str, project: Path, out: Path,
     env = {k: v for k, v in os.environ.items() if not k.startswith('CLAUDE')}
     proc = subprocess.run(cmd, cwd=project, input=stdin.encode('utf-8'),
                           capture_output=True, timeout=timeout, env=env)
-    (out / f'{condition}-stderr.txt').write_bytes(proc.stderr)
-    raw_path = out / f'{condition}-raw.json'
+    (out / f'{label}-stderr.txt').write_bytes(proc.stderr)
+    raw_path = out / f'{label}-raw.json'
     raw_path.write_bytes(proc.stdout)
     if proc.returncode != 0:
-        raise RuntimeError(f'{condition}: claude exited with {proc.returncode}; see {raw_path.name} and stderr')
-    raw = json.loads(proc.stdout.decode('utf-8'))
+        raise RuntimeError(f'{label}: claude exited with {proc.returncode}; see {raw_path.name} and stderr')
+    try:
+        raw = json.loads(proc.stdout.decode('utf-8'))
+    except json.JSONDecodeError:
+        # Usually means the flags never reached the CLI (e.g. a wrapper that mangles argv).
+        raise RuntimeError(f'{label}: claude did not return JSON (plain text in {raw_path.name}); '
+                           'check that --output-format reached the CLI') from None
     outputs = raw.get('structured_output')
     if isinstance(outputs, dict):
         outputs = outputs.get('outputs')
@@ -100,13 +109,11 @@ def run_condition(claude: str, condition: str, project: Path, out: Path,
         text = raw.get('result', '')
         start, end = text.find('['), text.rfind(']')
         if start < 0 or end < 0:
-            raise RuntimeError(f'{condition}: no JSON array in result; see {raw_path.name}')
+            raise RuntimeError(f'{label}: no JSON array in result; see {raw_path.name}')
         outputs = json.loads(text[start:end + 1])
-    (out / f'{condition}.json').write_text(
-        json.dumps(outputs, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     usage_by_model = raw.get('modelUsage') or {}
     main_model = max(usage_by_model, key=lambda m: usage_by_model[m].get('outputTokens', 0), default=None)
-    return {
+    return outputs, {
         'model': main_model,
         'model_usage': {m: u.get('outputTokens') for m, u in usage_by_model.items()},
         'num_turns': raw.get('num_turns'),
@@ -116,6 +123,27 @@ def run_condition(claude: str, condition: str, project: Path, out: Path,
     }
 
 
+def run_condition(claude: str, condition: str, project: Path, out: Path, model: str | None,
+                  max_turns: int, timeout: int, batch_size: int) -> dict:
+    inputs = json.loads((out / 'inputs.json').read_text(encoding='utf-8'))
+    size = batch_size if batch_size > 0 else len(inputs)
+    batches = [inputs[i:i + size] for i in range(0, len(inputs), size)]
+    outputs, infos = [], []
+    for n, batch in enumerate(batches, 1):
+        label = condition if len(batches) == 1 else f'{condition}-{n:02d}'
+        if len(batches) > 1:
+            print(f'  batch {n}/{len(batches)}: {batch[0]["id"]}-{batch[-1]["id"]}', flush=True)
+        batch_outputs, info = run_batch(claude, condition, project, out, batch, label,
+                                        model, max_turns, timeout)
+        outputs += batch_outputs
+        infos.append(info | {'ids': [c['id'] for c in batch]})
+    (out / f'{condition}.json').write_text(
+        json.dumps(outputs, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    if len(infos) == 1:
+        return {k: v for k, v in infos[0].items() if k != 'ids'}
+    return {'model': infos[0]['model'], 'batch_size': size, 'batches': infos}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('out', type=Path, help='A new directory, normally under evals/runs/')
@@ -123,7 +151,9 @@ def main() -> int:
     parser.add_argument('--condition', choices=('both', 'bibung', 'baseline'), default='both')
     parser.add_argument('--model', help='Model alias or ID passed to claude --model (default: session default)')
     parser.add_argument('--max-turns', type=int, default=20)
-    parser.add_argument('--timeout', type=int, default=1800, help='Seconds per condition')
+    parser.add_argument('--timeout', type=int, default=1800, help='Seconds per claude session')
+    parser.add_argument('--batch-size', type=int, default=0,
+                        help='Cases per claude session (default 0: all cases in one session)')
     args = parser.parse_args()
 
     claude = shutil.which(args.claude) or args.claude
@@ -147,7 +177,8 @@ def main() -> int:
     errors = []
     for condition in conditions:
         print(f'Running {condition} ...', flush=True)
-        info = run_condition(claude, condition, projects[condition], out, args.model, args.max_turns, args.timeout)
+        info = run_condition(claude, condition, projects[condition], out, args.model, args.max_turns,
+                             args.timeout, args.batch_size)
         outputs = json.loads((out / f'{condition}.json').read_text(encoding='utf-8'))
         shape_errors = check_outputs(cases, outputs)
         info['shape_errors'] = shape_errors
